@@ -1,5 +1,5 @@
-import AssistantSpeechIndicator from "./AssistantSpeechIndicator";
-import VolumeLevel from "./VolumeLevel";
+import AssistantVoiceVisualizer from "./AssistantVoiceVisualizer";
+import UserVoiceVisualizer from "./UserVoiceVisualizer";
 
 const ActiveCallDetails = ({
   assistantIsSpeaking,
@@ -9,8 +9,11 @@ const ActiveCallDetails = ({
   return (
     <div className="active-call-detail">
       <div className="call-info">
-        <AssistantSpeechIndicator isSpeaking={assistantIsSpeaking} />
-        <VolumeLevel volume={volumeLevel} />
+        <AssistantVoiceVisualizer
+          isSpeaking={assistantIsSpeaking}
+          volumeLevel={volumeLevel}
+        />
+        <UserVoiceVisualizer volume={volumeLevel} />
       </div>
       <div className="end-call-button">
         <button onClick={endCallCallback}>End Call</button>

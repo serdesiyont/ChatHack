@@ -11,11 +11,6 @@ function App() {
   const [callResult, setCallResult] = useState(null);
   const [loadingResult, setLoadingResult] = useState(false);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
-
   useEffect(() => {
     vapi
       .on("call-start", () => {
@@ -37,19 +32,29 @@ function App() {
       });
   }, []);
 
-  const handleInputChange = (setter) => (event) => {
-    setter(event.target.value);
-  };
-
   const handleStart = async () => {
     setLoading(true);
-    const data = await startAssistant(firstName, lastName, email, phoneNumber);
-    setCallId(data.id);
+    const data = await startAssistant();
+    if (data?.id) {
+      setCallId(data.id);
+    } else {
+      console.error("Failed to start assistant or get call ID");
+      setLoading(false);
+    }
   };
 
   const handleStop = () => {
     stopAssistant();
-    getCallDetails();
+    // Reset state to return to starting page
+    setStarted(false);
+    setCallId("");
+    setCallResult(null);
+    setLoadingResult(false);
+    setLoading(false);
+    // Optionally: If you want to still fetch call details, comment out the above and use the old logic
+    // if (callId) {
+    //   getCallDetails();
+    // }
   };
 
   const getCallDetails = (interval = 3000) => {
@@ -68,49 +73,15 @@ function App() {
       .catch((error) => alert(error));
   };
 
-  const showForm = !loading && !started && !loadingResult && !callResult;
-  const allFieldsFilled = firstName && lastName && email && phoneNumber;
+  const showStartButton = !loading && !started && !loadingResult && !callResult;
 
   return (
     <div className="app-container">
-      {showForm && (
+      {showStartButton && (
         <>
-          <h1>Contact Details (Required)</h1>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            className="input-field"
-            onChange={handleInputChange(setFirstName)}
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            className="input-field"
-            onChange={handleInputChange(setLastName)}
-          />
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            className="input-field"
-            onChange={handleInputChange(setEmail)}
-          />
-          <input
-            type="tel"
-            placeholder="Phone number"
-            value={phoneNumber}
-            className="input-field"
-            onChange={handleInputChange(setPhoneNumber)}
-          />
           {!started && (
-            <button
-              onClick={handleStart}
-              disabled={!allFieldsFilled}
-              className="button"
-            >
-              Start Application Call
+            <button onClick={handleStart} className="button">
+              Start Conversation
             </button>
           )}
         </>
